@@ -47,8 +47,8 @@
             <h2 class="text-4xl font-extrabold text-navy">Profil Sekolah</h2>
         </div>
         <div class="grid lg:grid-cols-2 gap-10 items-center">
-            <div class="relative h-96 rounded-3xl shadow-xl overflow-hidden" style="background: linear-gradient(160deg,#7fc6e4,#2a7fae 55%,#d9a05d)">
-                <span class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white text-sm px-4 py-2 rounded-lg shadow">Foto Gedung Sekolah</span>
+            <div class="img">
+                <img src="{{ asset('img/smkhanjuang.jpg') }}" alt="Foto Gedung Sekolah" class="w-full h-full object-cover">
             </div>
             <div>
                 <h3 class="text-3xl font-extrabold text-navy">{{ $profil->nama }}</h3>
