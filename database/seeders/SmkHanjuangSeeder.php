@@ -16,14 +16,14 @@ class SmkHanjuangSeeder extends Seeder
             'visi'       => 'Menjadi sekolah yang unggul dalam prestasi, berkarakter, terampil, dan berdaya saing.',
             'misi'       => "Meningkatkan kualitas pembelajaran.\nMengembangkan kompetensi peserta didik.\nMembentuk siswa yang disiplin dan bertanggung jawab.\nMewujudkan lingkungan sekolah yang aman dan kondusif.",
             'sejarah'    => 'Isi bagian ini dengan sejarah resmi SMK Hanjuang, tahun berdiri, perkembangan sekolah, serta informasi penting lainnya.',
-            'alamat'     => 'isi alamat resmi sekolah',
+            'alamat'     => 'Jl. Raya Mauk - Pasar Kemis KM. 2, Kp. Sawah Ciladog (Kiladog), RT 05 / RW 01, Desa Kedung Dalem, Kecamatan Mauk, Kabupaten Tangerang, Banten 15530',
             'telepon'    => '08xxxxxxxxxx',
             'email'      => 'info@smkhanjuang.sch.id',
             'jam_kerja'  => 'Senin–Jumat · 07.00–15.00',
         ]);
 
         foreach ([
-               ['TSM', 'Mempelajari perawatan, perbaikan, dan teknologi sepeda motor.', '🏍️', '#d8f1fb'],
+            ['Rekayasa Perangkat Lunak', 'Belajar pemrograman, website, aplikasi, dan pengembangan perangkat lunak.', '💻', '#d8f1fb'],
             ['Teknik Komputer & Jaringan', 'Mempelajari komputer, jaringan, dan teknologi informasi.', '🌐', '#fdf0cf'],
             ['Desain Komunikasi Visual', 'Mengembangkan kemampuan desain grafis, multimedia, dan komunikasi visual.', '🎨', '#e8e2fb'],
             ['Manajemen Perkantoran', 'Mempelajari administrasi, pengelolaan dokumen, dan pelayanan perkantoran.', '⚙️', '#d9f5ea'],

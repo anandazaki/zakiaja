@@ -17,7 +17,7 @@
 <header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-100">
     <div class="max-w-6xl mx-auto px-4 h-[72px] flex items-center justify-between">
         <a href="{{ url('/') }}" class="flex items-center gap-3">
-            <span class="w-11 h-11 rounded-xl bg-brand text-white grid place-items-center text-xl">✦</span>
+           <img src="{{ asset('img/smkhanjuang.jpg') }}" alt="Logo" class="w-11 h-11 object-contain">
             <span class="leading-tight">
                 <span class="block font-extrabold text-navy tracking-wide">{{ strtoupper($profil->nama) }}</span>
                 <span class="block text-[10px] font-semibold text-brand uppercase">{{ $profil->tagline }}</span>

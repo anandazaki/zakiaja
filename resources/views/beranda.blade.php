@@ -150,7 +150,7 @@
             <div>
                 <h3 class="text-3xl font-extrabold">{{ $profil->nama }}</h3>
                 <ul class="mt-6 space-y-4 text-sm">
-                    <li>📍 Alamat: {{ $profil->alamat }}</li>
+                      <li>📍 Alamat: Jl. Raya Mauk - Pasar Kemis KM. 2, Desa Kedung Dalem, Kecamatan Mauk, Kabupaten Tangerang</li>
                     <li>📞 Telepon: {{ $profil->telepon }}</li>
                     <li>✉️ Email: {{ $profil->email }}</li>
                     <li>🕐 {{ $profil->jam_kerja }}</li>
