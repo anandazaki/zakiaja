@@ -3,11 +3,14 @@
 @section('content')
 
 {{-- BERANDA --}}
-<section id="beranda" class="bg-gradient-to-br from-navy via-[#14608f] to-brand text-white">
-    <div class="max-w-6xl mx-auto px-4 py-28 text-center">
-        <p class="text-sm font-bold tracking-[0.25em] uppercase text-emerald-300">Selamat Datang di</p>
-        <h1 class="text-5xl md:text-6xl font-extrabold mt-3">{{ $profil->nama }}</h1>
-        <p class="mt-4 text-lg text-blue-100">{{ $profil->tagline }}</p>
+<section id="beranda" class="relative text-white {{ $profil->hero_gambar ? 'bg-navy' : 'bg-gradient-to-br from-navy via-[#14608f] to-brand' }}">
+    @if ($profil->hero_gambar)
+        <img src="{{ asset('storage/' . $profil->hero_gambar) }}" alt="" class="absolute inset-0 w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-br from-navy/85 via-navy/60 to-brand/50"></div>
+    @endif
+    <div class="relative max-w-6xl mx-auto px-4 py-28 text-center">
+        <h1 class="text-4xl md:text-6xl font-extrabold">{{ $profil->hero_judul ?: 'Selamat Datang di ' . $profil->nama }}</h1>
+        <p class="mt-4 text-lg text-blue-100 max-w-3xl mx-auto">{{ $profil->hero_deskripsi ?: $profil->tagline }}</p>
         <a href="#kontak" class="inline-block mt-8 bg-white text-navy font-bold px-7 py-3 rounded-lg shadow">Hubungi Kami</a>
     </div>
 </section>
@@ -15,7 +18,7 @@
 {{-- MENU CEPAT --}}
 <div class="max-w-6xl mx-auto px-4 -mt-10 relative z-10">
     <div class="bg-white rounded-2xl shadow-lg border border-slate-100 grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-100">
-        @foreach ([['jurusan','🎓','Jurusan','Program keahlian'],['Sarana dan Prasarana','🏫','Sarana dan Prasarana','Sarana sekolah'],['prestasi','🏆','Prestasi','Pencapaian siswa'],['kegiatan','📅','Kegiatan','Aktivitas sekolah']] as [$id,$ic,$jd,$sb])
+        @foreach ([['jurusan','🎓','Jurusan','Program keahlian'],['fasilitas','🏫','Sarana dan Prasarana','Sarana sekolah'],['prestasi','🏆','Prestasi','Pencapaian siswa'],['kegiatan','📅','Kegiatan','Aktivitas sekolah']] as [$id,$ic,$jd,$sb])
             <a href="#{{ $id }}" class="flex items-center gap-4 p-6 hover:bg-soft transition">
                 <span class="text-4xl">{{ $ic }}</span>
                 <span><span class="block font-bold text-navy">{{ $jd }}</span><span class="block text-sm text-slate-500">{{ $sb }}</span></span>
@@ -48,7 +51,7 @@
         </div>
         <div class="grid lg:grid-cols-2 gap-10 items-center">
             <div class="img">
-                <img src="{{ asset('img/smkhanjuang.jpg') }}" alt="Foto Gedung Sekolah" class="w-full h-full object-cover">
+                <img src="{{ $profil->gambar ? asset('storage/' . $profil->gambar) : asset('img/smkhanjuang.jpg') }}" alt="Foto Gedung Sekolah" class="w-full h-full object-cover">
             </div>
             <div>
                 <h3 class="text-3xl font-extrabold text-navy">{{ $profil->nama }}</h3>
@@ -80,8 +83,15 @@
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach ($fasilitas as $f)
             <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div class="h-44 grid place-items-center text-6xl" style="background: linear-gradient(135deg,{{ $f->warna1 }},{{ $f->warna2 }})">{{ $f->icon }}</div>
-                <p class="p-4 text-sm font-bold text-navy">{{ $f->nama }}</p>
+                @if ($f->gambar)
+                    <img src="{{ asset('storage/' . $f->gambar) }}" alt="{{ $f->nama }}" class="h-44 w-full object-cover" loading="lazy">
+                @else
+                    <div class="h-44 grid place-items-center text-6xl" style="background: linear-gradient(135deg,{{ $f->warna1 }},{{ $f->warna2 }})">{{ $f->icon }}</div>
+                @endif
+                <div class="p-4">
+                    <p class="text-sm font-bold text-navy">{{ $f->nama }}</p>
+                    @if ($f->deskripsi)<p class="mt-1 text-xs text-slate-500">{{ $f->deskripsi }}</p>@endif
+                </div>
             </div>
         @endforeach
     </div>
@@ -113,7 +123,11 @@
     <div class="grid md:grid-cols-3 gap-6">
         @foreach ($kegiatans as $k)
             <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div class="h-52 grid place-items-center text-7xl" style="background: linear-gradient(135deg,{{ $k->warna1 }},{{ $k->warna2 }})">{{ $k->icon }}</div>
+                @if ($k->gambar)
+                    <img src="{{ asset('storage/' . $k->gambar) }}" alt="{{ $k->judul }}" class="h-52 w-full object-cover" loading="lazy">
+                @else
+                    <div class="h-52 grid place-items-center text-7xl" style="background: linear-gradient(135deg,{{ $k->warna1 }},{{ $k->warna2 }})">{{ $k->icon }}</div>
+                @endif
                 <div class="p-5">
                     <h3 class="font-bold text-navy text-lg">{{ $k->judul }}</h3>
                     <p class="text-xs text-slate-500 mt-1">{{ $k->tanggal->translatedFormat('d F Y') }}</p>
@@ -131,7 +145,13 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             @foreach ($galeris as $g)
                 <div class="rounded-2xl h-40 grid place-items-center text-5xl relative overflow-hidden" style="background: linear-gradient(135deg,{{ $g->warna1 }},{{ $g->warna2 }})">
-                    {{ $g->icon }}
+                    @if ($g->file && $g->tipe === 'video')
+                        <video src="{{ asset('storage/' . $g->file) }}" class="absolute inset-0 w-full h-full object-cover" controls preload="metadata"></video>
+                    @elseif ($g->file)
+                        <img src="{{ asset('storage/' . $g->file) }}" alt="{{ $g->judul }}" class="absolute inset-0 w-full h-full object-cover" loading="lazy">
+                    @else
+                        {{ $g->icon }}
+                    @endif
                     <span class="absolute bottom-0 inset-x-0 bg-black/30 text-white text-xs font-semibold text-center py-1.5">{{ $g->judul }}</span>
                 </div>
             @endforeach
@@ -150,7 +170,7 @@
             <div>
                 <h3 class="text-3xl font-extrabold">{{ $profil->nama }}</h3>
                 <ul class="mt-6 space-y-4 text-sm">
-                      <li>📍 Alamat: Jl. Raya Mauk - Pasar Kemis KM. 2, Desa Kedung Dalem, Kecamatan Mauk, Kabupaten Tangerang</li>
+                      <li>📍 Alamat: {{ $profil->alamat }}</li>
                     <li>📞 Telepon: {{ $profil->telepon }}</li>
                     <li>✉️ Email: {{ $profil->email }}</li>
                     <li>🕐 {{ $profil->jam_kerja }}</li>

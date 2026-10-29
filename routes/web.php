@@ -19,9 +19,16 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // ---------- Dashboard admin (wajib login) ----------
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    // Halaman tunggal: Beranda, Profil, Kontak
+    Route::get('/beranda', [AdminController::class, 'beranda'])->name('beranda');
+    Route::put('/beranda', [AdminController::class, 'berandaUpdate'])->name('beranda.update');
     Route::get('/profil', [AdminController::class, 'profil'])->name('profil');
     Route::put('/profil', [AdminController::class, 'profilUpdate'])->name('profil.update');
+    Route::get('/kontak', [AdminController::class, 'kontak'])->name('kontak');
+    Route::put('/kontak', [AdminController::class, 'kontakUpdate'])->name('kontak.update');
 
+    // Data berbentuk daftar: tambah / ubah / hapus
     Route::prefix('{resource}')
         ->where(['resource' => 'jurusan|fasilitas|prestasi|kegiatan|galeri|guru', 'id' => '[0-9]+'])
         ->group(function () {

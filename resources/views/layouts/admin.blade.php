@@ -5,76 +5,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Dashboard') | Admin SMK Hanjuang</title>
     <link rel="icon" href="{{ asset('img/logo.jpg') }}" type="image/jpeg">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { theme: { extend: { colors: {
-            navy: '#16405f', brand: '#0b78d1', leaf: '#0f8a5f', soft: '#f5faff'
-        } } } };
-    </script>
+    {{-- CSS admin dilayani langsung dari public/css/admin.css (tanpa build / Vite / CDN). ?v= memaksa browser memuat versi terbaru. --}}
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ @filemtime(public_path('css/admin.css')) ?: 1 }}">
 </head>
-<body class="bg-soft text-slate-700 antialiased">
+<body class="admin">
 @php
     $aktif = request()->route('resource');
+    // [nama route, parameter, ikon, label, apakah sedang aktif]
     $menuAdmin = [
-        ['admin.dashboard', [], '📊', 'Dashboard', request()->routeIs('admin.dashboard')],
-        ['admin.profil', [], '🏫', 'Profil Sekolah', request()->routeIs('admin.profil')],
-        ['admin.data.index', ['jurusan'], '🎓', 'Jurusan', $aktif === 'jurusan'],
-        ['admin.data.index', ['fasilitas'], '🏢', 'Sarana dan Prasarana', $aktif === 'fasilitas'],
-        ['admin.data.index', ['prestasi'], '🏆', 'Prestasi', $aktif === 'prestasi'],
-        ['admin.data.index', ['kegiatan'], '📅', 'Kegiatan', $aktif === 'kegiatan'],
-        ['admin.data.index', ['galeri'], '🖼️', 'Galeri', $aktif === 'galeri'],
-        ['admin.data.index', ['guru'], '👩‍🏫', 'Data Guru', $aktif === 'guru'],
+        ['admin.dashboard',  [],            'dashboard', 'Dashboard',            request()->routeIs('admin.dashboard')],
+        ['admin.beranda',    [],            'beranda',   'Beranda',              request()->routeIs('admin.beranda*')],
+        ['admin.data.index', ['jurusan'],   'jurusan',   'Jurusan',              $aktif === 'jurusan'],
+        ['admin.profil',     [],            'profil',    'Profil',               request()->routeIs('admin.profil*')],
+        ['admin.data.index', ['fasilitas'], 'fasilitas', 'Sarana dan Prasarana', $aktif === 'fasilitas'],
+        ['admin.data.index', ['prestasi'],  'prestasi',  'Prestasi',             $aktif === 'prestasi'],
+        ['admin.data.index', ['kegiatan'],  'kegiatan',  'Kegiatan',             $aktif === 'kegiatan'],
+        ['admin.data.index', ['galeri'],    'galeri',    'Galeri',               $aktif === 'galeri'],
+        ['admin.kontak',     [],            'kontak',    'Kontak',               request()->routeIs('admin.kontak*')],
+        ['admin.data.index', ['guru'],      'guru',      'Data Guru',            $aktif === 'guru'],
     ];
+    $namaAdmin = auth()->user()->username ?? auth()->user()->name ?? 'admin';
 @endphp
 
-<div class="lg:flex min-h-screen">
-    <div class="lg:hidden sticky top-0 z-40 bg-navy text-white flex items-center justify-between px-4 h-14">
-        <span class="font-extrabold">Admin SMK Hanjuang</span>
-        <button type="button" aria-label="Menu" onclick="document.getElementById('sidebar').classList.toggle('hidden')" class="p-2">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-    </div>
+<div class="adm-shell">
 
-    <aside id="sidebar" class="hidden lg:flex lg:flex-col lg:w-64 lg:shrink-0 lg:sticky lg:top-0 lg:h-screen bg-navy text-white">
-        <div class="hidden lg:flex items-center gap-3 px-5 h-[72px] border-b border-white/10">
-            <img src="{{ asset('img/logo.jpg') }}" alt="Logo" class="w-10 h-10 object-contain bg-white rounded-lg p-0.5"
-                 onerror="this.outerHTML='<span class=&quot;w-10 h-10 rounded-lg bg-brand grid place-items-center font-extrabold&quot;>SH</span>'">
-            <div class="leading-tight">
-                <p class="font-extrabold">SMK Hanjuang</p>
-                <p class="text-xs text-blue-200">Panel Administrator</p>
-            </div>
+    {{-- Latar gelap saat menu HP/tablet terbuka --}}
+    <div id="tirai" class="adm-tirai"></div>
+
+    {{-- ================= Sidebar ================= --}}
+    <aside id="sidebar" class="adm-sidebar" aria-label="Navigasi admin">
+        <div class="adm-brand">
+            <span class="adm-logo">
+                <img src="{{ asset('img/logo.jpg') }}" alt="" width="36" height="36"
+                     onerror="this.parentNode.classList.add('tanpa-gambar')">
+                <span class="adm-logo-teks">SH</span>
+            </span>
+            <span class="adm-brand-nama">SMK HANJUANG</span>
         </div>
 
-        <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-sm font-semibold">
+        <nav class="adm-nav" aria-label="Menu admin">
             @foreach ($menuAdmin as [$rute, $param, $ikon, $label, $sedangAktif])
-                <a href="{{ route($rute, $param) }}"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition {{ $sedangAktif ? 'bg-white text-navy' : 'text-blue-100 hover:bg-white/10' }}">
-                    <span class="w-6 text-center">{{ $ikon }}</span>{{ $label }}
+                <a href="{{ route($rute, $param) }}" class="adm-link {{ $sedangAktif ? 'is-aktif' : '' }}" @if ($sedangAktif) aria-current="page" @endif>
+                    @include('admin.partials.ikon', ['ikonNama' => $ikon, 'ikonUkuran' => 20])
+                    <span>{{ $label }}</span>
                 </a>
             @endforeach
         </nav>
 
-        <div class="p-3 border-t border-white/10 space-y-1 text-sm font-semibold">
-            <a href="{{ url('/') }}" target="_blank" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-blue-100 hover:bg-white/10">
-                <span class="w-6 text-center">🌐</span>Lihat website
+        <div class="adm-foot">
+            <a href="{{ url('/') }}" target="_blank" rel="noopener" class="adm-link">
+                @include('admin.partials.ikon', ['ikonNama' => 'globe', 'ikonUkuran' => 20])
+                <span>Lihat Website</span>
             </a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-red-200 hover:bg-red-500/20">
-                    <span class="w-6 text-center">🚪</span>Keluar
+                <button type="submit" class="adm-link">
+                    @include('admin.partials.ikon', ['ikonNama' => 'logout', 'ikonUkuran' => 20])
+                    <span>Logout</span>
                 </button>
             </form>
         </div>
     </aside>
 
-    <main class="flex-1 min-w-0 p-4 sm:p-8">
-        <div class="max-w-5xl mx-auto">
-            @if (session('sukses'))
-                <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-lg px-4 py-3" role="status">{{ session('sukses') }}</div>
-            @endif
-            @yield('content')
-        </div>
-    </main>
+    {{-- ================= Area utama ================= --}}
+    <div class="adm-main">
+
+        {{-- Navbar atas: tombol menu (HP/tablet) di kiri, akun admin di kanan --}}
+        <header class="adm-top">
+            <button type="button" id="buka-menu" class="adm-menu-btn" aria-label="Buka menu" aria-controls="sidebar" aria-expanded="false">
+                @include('admin.partials.ikon', ['ikonNama' => 'menu', 'ikonUkuran' => 24])
+            </button>
+            <span class="adm-top-brand">SMK HANJUANG</span>
+
+            <span class="adm-akun" title="Login sebagai {{ $namaAdmin }}">
+                <span class="adm-avatar">@include('admin.partials.ikon', ['ikonNama' => 'user', 'ikonUkuran' => 18])</span>
+                <span class="adm-akun-nama">{{ $namaAdmin }}</span>
+            </span>
+        </header>
+
+        <main class="adm-content">
+            <div class="adm-wrap">
+                @if (session('sukses'))
+                    <div data-notif class="notif notif-ok" role="status">
+                        @include('admin.partials.ikon', ['ikonNama' => 'cek', 'ikonUkuran' => 18])
+                        <span>{{ session('sukses') }}</span>
+                    </div>
+                @endif
+                @if (session('galat') || $errors->any())
+                    <div class="notif notif-err" role="alert">
+                        @include('admin.partials.ikon', ['ikonNama' => 'peringatan', 'ikonUkuran' => 18])
+                        <span>{{ session('galat') ?? 'Perubahan belum tersimpan. Periksa kembali isian yang ditandai merah.' }}</span>
+                    </div>
+                @endif
+
+                @yield('content')
+            </div>
+        </main>
+
+        <footer class="adm-copy">&copy; {{ date('Y') }} SMK Hanjuang &middot; Admin Panel</footer>
+    </div>
 </div>
+
+{{-- Dialog konfirmasi hapus --}}
+<div id="dialog-hapus" class="modal" role="dialog" aria-modal="true" aria-labelledby="judul-hapus">
+    <div class="modal-kotak">
+        <h2 id="judul-hapus">Hapus data?</h2>
+        <p>Data <strong id="nama-hapus"></strong> akan dihapus permanen beserta file gambarnya. Tindakan ini tidak bisa dibatalkan.</p>
+        <div class="modal-aksi">
+            <button type="button" id="batal-hapus" class="btn btn-garis">Batal</button>
+            <button type="button" id="ya-hapus" class="btn btn-merah">Ya, hapus</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---- Menu HP / tablet ----
+    const sidebar = document.getElementById('sidebar');
+    const tirai = document.getElementById('tirai');
+    const tombolMenu = document.getElementById('buka-menu');
+
+    const bukaTutup = (buka) => {
+        sidebar.classList.toggle('is-buka', buka);
+        tirai.classList.toggle('is-buka', buka);
+        document.body.classList.toggle('menu-buka', buka);
+        tombolMenu.setAttribute('aria-expanded', buka ? 'true' : 'false');
+    };
+    tombolMenu.addEventListener('click', () => bukaTutup(!sidebar.classList.contains('is-buka')));
+    tirai.addEventListener('click', () => bukaTutup(false));
+    sidebar.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => bukaTutup(false)));
+    window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => { if (e.matches) bukaTutup(false); });
+
+    // ---- Konfirmasi sebelum menghapus ----
+    const dialog = document.getElementById('dialog-hapus');
+    let formHapus = null;
+    document.addEventListener('submit', (e) => {
+        if (!e.target.matches('form[data-hapus]')) return;
+        e.preventDefault();
+        formHapus = e.target;
+        document.getElementById('nama-hapus').textContent = '"' + (formHapus.dataset.hapus || 'ini') + '"';
+        dialog.classList.add('is-buka');
+        document.getElementById('batal-hapus').focus();
+    });
+    const tutupDialog = () => { dialog.classList.remove('is-buka'); formHapus = null; };
+    document.getElementById('batal-hapus').addEventListener('click', tutupDialog);
+    document.getElementById('ya-hapus').addEventListener('click', () => { if (formHapus) formHapus.submit(); });
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) tutupDialog(); });
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        tutupDialog();
+        bukaTutup(false);
+    });
+
+    // ---- Notifikasi sukses hilang otomatis ----
+    document.querySelectorAll('[data-notif]').forEach((el) => setTimeout(() => el.remove(), 6000));
+</script>
 </body>
 </html>

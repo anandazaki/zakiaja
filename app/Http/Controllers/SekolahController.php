@@ -36,6 +36,7 @@ class SekolahController extends Controller
             'judul'  => $kegiatan->judul,
             'sub'    => $kegiatan->tanggal->translatedFormat('d F Y'),
             'isi'    => $kegiatan->deskripsi,
+            'gambar' => $kegiatan->gambar,
         ]);
     }
 
